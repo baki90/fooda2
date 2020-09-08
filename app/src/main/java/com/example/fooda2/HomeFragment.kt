@@ -2,8 +2,12 @@ package com.example.fooda2
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,20 +37,21 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for th`is fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuinflater.inflate(R.menu.home_tool, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if(item?.itemId == R.id.calander){
-            
+        val view: View = inflater.inflate(R.layout.fragment_home, container, false)
+        view.cal_btn.setOnClickListener { view ->
+            val intent = Intent(context, MonthActivity::class.java)
+            startActivity(intent)
         }
 
-        return super.onOptionsItemSelected(item)
+        view.home_fab.setOnClickListener{
+            view ->
+            val intent = Intent(context, PlusActivity::class.java)
+            startActivity(intent)
+        }
+
+        return view
     }
+
     companion object {
         /**
          * Use this factory method to create a new instance of

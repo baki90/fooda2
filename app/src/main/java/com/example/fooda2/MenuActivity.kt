@@ -56,4 +56,6 @@ class MenuActivity : AppCompatActivity() {
             actionBar.hide()
         }
     }
+
+
 }
