@@ -1,9 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".HomeFragment">
-
-    <item android:id="@+id/calander"
-        android:title="cal_btn"
-        app:showAsAction="always|withText" android:icon="@drawable/calendar"/>
-</menu>

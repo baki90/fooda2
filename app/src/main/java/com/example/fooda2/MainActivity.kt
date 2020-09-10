@@ -1,10 +1,12 @@
 package com.example.fooda2
 
+import android.Manifest
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.ActionBar
+import androidx.core.app.ActivityCompat
 
 //start Activity, Splash Image
 class MainActivity : AppCompatActivity() {
@@ -19,7 +21,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }, SPLASH_TIME_OUT)
+
        //hideActionBar()
+        
     }
 
     private fun hideActionBar() {

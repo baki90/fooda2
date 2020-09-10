@@ -1,11 +1,16 @@
 package com.example.fooda2
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.ActionBar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_menu.*
+import kotlinx.android.synthetic.main.fragment_board.*
 
 class MenuActivity : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -41,6 +46,7 @@ class MenuActivity : AppCompatActivity() {
         openFragment(HomeFragment()) //초기 세팅은 home으로 함.
         //actionBar.setTitle("Fooda!")
         //hideActionBar()
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
     }
 
     private fun openFragment(fragment: Fragment) {
