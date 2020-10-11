@@ -7,11 +7,18 @@ import android.util.Log
 import android.view.*
 import android.widget.BaseAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_board.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,7 +34,9 @@ class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    val list: ArrayList<CustomItem2> = ArrayList()
+    val fooday : List<String> = listOf<String>("아침", "점심", "저녁","간식")
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -42,9 +51,19 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for th`is fragment
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
-        val list: ArrayList<CustomItem2> = ArrayList()
-        list.add(CustomItem2("아침","콩나물 해장국, 배추김치, 오징어무침", "738kcal"))
-        list.add(CustomItem2("점심","감자, 고구마, 옥수수", "342kcal"))
+
+        val now = System.currentTimeMillis();
+        val date : Date = Date(now)
+        val datetime : String = SimpleDateFormat("yyyy-MM-dd").format(date)
+        Log.d("time", datetime)
+        home_init(datetime, view)
+        val mFormat : SimpleDateFormat = SimpleDateFormat("yyyy년 MM월 dd일")
+        val time : String = mFormat.format(date)
+
+        view.home_date_txt.text = time
+
+        //list.add(CustomItem2("아침","햄버거", "619kcal / 278g"))
+        //list.add(CustomItem2("점심","비빔밥", "586kcal / 400g"))
 
 
         view.home_list.adapter = context?.let { CustomAdapter2(it, list) }
@@ -60,6 +79,51 @@ class HomeFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun home_init(datetime: String, view : View) {
+        var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
+        var server = retrofit.create(RetrofitInterface::class.java)
+
+        server.get_total_diet(RetrofitInterface.RetrofitClient.token,datetime).enqueue(object:
+            Callback<RetrofitInterface.Nutrient> {
+            override fun onFailure(call: Call<RetrofitInterface.Nutrient>, t: Throwable) {
+                Log.d("레트로핏 결과1",t.message)
+            }
+            override fun onResponse(call: Call<RetrofitInterface.Nutrient>, response: Response<RetrofitInterface.Nutrient>) {
+                if (response?.isSuccessful) {
+                    val kcal = response?.body()?.calories?.toInt()
+                    val tan = response?.body()?.carbohydrate
+                    val dan = response?.body()?.protein
+                    val gi =response?.body()?.fat
+                    val kicho = response?.body()?.kicho?.toInt()
+
+                    view.home_total.setText(kcal.toString() + " / " + kicho + "\n잔여 칼로리 " + (kicho!!-kcal!!) + "kcal")
+                    view.home_cal.setText("탄수화물\n"+tan.toString()+'g')
+                    view.home_pro.setText("단백질\n"+dan.toString()+'g')
+                    view.home_fat.setText("지방\n"+gi.toString()+'g')
+
+                    Log.d("레트로핏 결과2",""+response?.body().toString())
+                } else {
+                }
+            }
+        })
+
+        server.get_total_diet_list(RetrofitInterface.RetrofitClient.token, datetime).enqueue(object: Callback<List<RetrofitInterface.foodlist>>{
+            override fun onFailure(call: Call<List<RetrofitInterface.foodlist>>, t: Throwable) {
+                Log.d("레트로핏 결과1",t.message)
+            }
+            override fun onResponse(call: Call<List<RetrofitInterface.foodlist>>, response: Response<List<RetrofitInterface.foodlist>>) {
+                if (response?.isSuccessful) {
+                    val i = 0
+                    for(res in response.body()!!){
+                        list.add(CustomItem2(fooday[res.day], res.food_name, res.cal.toInt().toString() + "kcal / "  +res.gram.toInt().toString() +"g"))
+                    }
+                } else {
+                }
+            }
+        })
+
     }
 
     companion object {

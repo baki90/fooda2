@@ -26,6 +26,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_register.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -40,7 +44,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         login_btn.setOnClickListener { signinEmail() }
-        register_btn.setOnClickListener { signupEmail() }
+        register_btn.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+            //signupEmail()
+            }
         google_login.setOnClickListener{ googleLogin() }
         facebook_login.setOnClickListener{ facebookLogin()}
         auth = FirebaseAuth.getInstance()
@@ -84,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 //login
                 Toast.makeText(this, "로그인되었습니다.", Toast.LENGTH_LONG).show()
-                moveMainPage(task.result?.user)
+                moveMainPage()
             } else if (task.exception?.message.isNullOrEmpty()) {
                 //login error
                 Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
@@ -110,7 +117,7 @@ class LoginActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 //login
                 Toast.makeText(this, "로그인되었습니다.", Toast.LENGTH_LONG).show()
-                moveMainPage(task.result?.user)
+                moveMainPage()
             } else if (task.exception?.message.isNullOrEmpty()) {
                 //login error
                 Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
@@ -137,7 +144,7 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         //creating a user account
                         Toast.makeText(this, "가입이 완료되었습니다", Toast.LENGTH_LONG).show()
-                        moveMainPage(task.result?.user)
+                        moveMainPage()
                     } else if (task.exception?.message.isNullOrEmpty()) {
                         //register error
                         Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
@@ -151,26 +158,34 @@ class LoginActivity : AppCompatActivity() {
         if (TextUtils.isEmpty(email.text) || TextUtils.isEmpty(password.text)) {
             Toast.makeText(this, "아이디와 비밀번호를 입력해 주세요", Toast.LENGTH_LONG).show()
         } else {
-            auth?.signInWithEmailAndPassword(email.text.toString(), password.text.toString())
-                ?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        //login
-                        Toast.makeText(this, "로그인되었습니다.", Toast.LENGTH_LONG).show()
-                        moveMainPage(task.result?.user)
-                    } else if (task.exception?.message.isNullOrEmpty()) {
-                        //login error
-                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
+            var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
+            var server = retrofit.create(RetrofitInterface::class.java)
+            server.post_login(email.text.toString(), password.text.toString()).enqueue(object: Callback<RetrofitInterface.Message> {
+                override fun onFailure(call: Call<RetrofitInterface.Message>, t: Throwable) {
+                    Log.d("레트로핏 결과1",t.message)
+                }
+
+                override fun onResponse(call: Call<RetrofitInterface.Message>, response: Response<RetrofitInterface.Message>) {
+                    if (response?.isSuccessful) {
+                        if("success" == (response?.body()?.result)){
+                            Toast.makeText(getApplicationContext(), "로그인이 완료되었습니다.", Toast.LENGTH_LONG).show();
+                            RetrofitInterface.RetrofitClient.token = response?.body()?.token!!
+                            moveMainPage()
+                        } else {
+                            Toast.makeText(getApplicationContext(), response?.body()?.msg, Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        Toast.makeText(this, "아이디와 비밀번호를 확인해주세요.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
                     }
                 }
+
+
+            })
         }
     }
 
-    fun moveMainPage(user: FirebaseUser?){
-        if(user != null){
-            startActivity(Intent(this, MenuActivity::class.java))
-        }
+    fun moveMainPage(){
+            startActivity(Intent(this, MenuActivity::class.java));
     }
 
     private fun hideActionBar() {

@@ -1,10 +1,15 @@
 package com.example.fooda2
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_analyze.view.*
+import kotlinx.android.synthetic.main.fragment_board.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,7 +39,15 @@ class AnalyzeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_analyze, container, false)
+
+        val view :View = inflater.inflate(R.layout.fragment_analyze, container, false)
+        val list: ArrayList<String> = ArrayList()
+        list.add("클럽 샌드위치 440kcal/200g")
+        list.add("닭가슴살 164kcal/100g")
+        list.add("그린 샐러드 148kcal/150g")
+        view.recommendlist.adapter = context?.let { AnalyzeAdapter(it, list) }
+
+        return view
     }
 
     companion object {
@@ -56,4 +69,50 @@ class AnalyzeFragment : Fragment() {
                 }
             }
     }
+}
+
+
+private class AnalyzeAdapter(context: Context, array: ArrayList<String>): BaseAdapter() {
+
+    private var list: ArrayList<String> = array
+    private var inflater: LayoutInflater = LayoutInflater.from(context)
+
+    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+
+        val view: View?
+        val viewHolder: ViewHolder4
+
+        if(p1 == null) {
+            view = this.inflater.inflate(R.layout.item_analyze, p2,false)
+            viewHolder = ViewHolder4(view)
+            view.tag = viewHolder
+        }
+        else {
+            view = p1
+            viewHolder = view.tag as ViewHolder4
+        }
+
+        viewHolder.analyze.text = list[p0]
+
+        return view!!
+    }
+
+    override fun getItem(p0: Int): Any {
+        return list[p0]
+    }
+
+    override fun getItemId(p0: Int): Long {
+        return p0.toLong()
+    }
+
+    override fun getCount(): Int {
+        return list.size
+    }
+
+}
+
+private class ViewHolder4(view: View?) {
+
+    val analyze: TextView = view?.findViewById(R.id.analyze_item) as TextView
+
 }

@@ -9,13 +9,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_plus.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -30,6 +34,8 @@ class PlusActivity : AppCompatActivity() {
     var PICK_IMAGE_FROM_ALBUM = 0
     var storage : FirebaseStorage? = null
     var photoUri : Uri? = null
+    var food_id : Int?= 0
+    var day : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_plus)
@@ -37,6 +43,22 @@ class PlusActivity : AppCompatActivity() {
         //Initiate storage
         storage = FirebaseStorage.getInstance()
 
+        spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                day = position
+                Log.d("position",day.toString())
+            }
+
+        }
         //갤러리 업로드
         plus_upload_btn.setOnClickListener {
             var photoPickerIntent = Intent(Intent.ACTION_PICK)
@@ -51,7 +73,11 @@ class PlusActivity : AppCompatActivity() {
         }
 
         plus_analyze_btn.setOnClickListener {
-            contentUpload()
+            dietAnalyze()
+        }
+
+        plus_diet_upload_btn.setOnClickListener {
+            dietUplaod()
         }
     }
 
@@ -69,7 +95,36 @@ class PlusActivity : AppCompatActivity() {
         }
     }
 
-    fun contentUpload(){
+    fun dietUplaod(){
+
+        var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
+        var server = retrofit.create(RetrofitInterface::class.java)
+
+        server.post_diet_upload(RetrofitInterface.RetrofitClient.token, food_id!!, day).enqueue((object: Callback<RetrofitInterface.Message> {
+            override fun onFailure(call: Call<RetrofitInterface.Message>, t: Throwable) {
+                Log.d("레트로핏 결과1",t.message)
+            }
+
+            override fun onResponse(call: Call<RetrofitInterface.Message>, response: Response<RetrofitInterface.Message>) {
+                if (response?.isSuccessful) {
+                    if("success" == (response?.body()?.result)){
+                        Toast.makeText(getApplicationContext(), "식단이 업데이트되었습니다.", Toast.LENGTH_LONG).show();
+                        moveMainPage()
+                    } else {
+                        Toast.makeText(getApplicationContext(), response?.body()?.msg, Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
+                }
+            }
+
+        }))
+    }
+    fun moveMainPage(){
+        startActivity(Intent(this, MenuActivity::class.java));
+    }
+
+    fun dietAnalyze(){
         //make filename
         var file = File(getRealPathFromURI(photoUri))
         var timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
@@ -83,17 +138,16 @@ class PlusActivity : AppCompatActivity() {
             .create()
 
         var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
-
         var server = retrofit.create(RetrofitInterface::class.java)
 
-        server.post_diet_image("juyoung",body).enqueue(object: Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+        server.post_diet_image(RetrofitInterface.RetrofitClient.token,body).enqueue(object: Callback<RetrofitInterface.Nutrient> {
+            override fun onFailure(call: Call<RetrofitInterface.Nutrient>, t: Throwable) {
                 Log.d("레트로핏 결과1",t.message)
             }
-
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+            override fun onResponse(call: Call<RetrofitInterface.Nutrient>, response: Response<RetrofitInterface.Nutrient>) {
                 if (response?.isSuccessful) {
-                    Toast.makeText(getApplicationContext(), "File Uploaded Successfully...", Toast.LENGTH_LONG).show();
+                    food_id = response?.body()?.food_id
+                    plus_setting(response?.body())
                     Log.d("레트로핏 결과2",""+response?.body().toString())
                 } else {
                     Toast.makeText(getApplicationContext(), "Some error occurred...", Toast.LENGTH_LONG).show();
@@ -101,6 +155,17 @@ class PlusActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun plus_setting(nutrient: RetrofitInterface.Nutrient?) {
+        plus_foodname.setText(nutrient?.food_name)
+        val cal : String = nutrient?.calories.toString() + "kcal / " + nutrient?.gram.toString() + "g"
+        plus_cal.setText(cal)
+        textView12.setText("탄수화물\n"+nutrient?.carbohydrate.toString() + "g")
+        textView13.setText("단백질\n" + nutrient?.protein.toString()+"g")
+        textView14.setText("지방\n" + nutrient?.fat.toString()+"g")
+
+        //  plus_foodname.text = nutrient?.food_name
     }
 
     fun getRealPathFromURI(contentUri: Uri?): String? {
