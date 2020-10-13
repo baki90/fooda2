@@ -22,38 +22,91 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_below="@id/analyze_toolbar"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="13dp"
+        android:src="@drawable/leaf" />
+
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:textColor="@color/colorAccent"
+        android:text="식습관 분석"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/imageView4"
+        android:layout_below="@id/analyze_toolbar"/>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/analyze_toolbar"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="5dp"
-        android:text="주간 섭취율을 통해 분석한 결과\n당신은 탄수화물 과다 타입입니다."
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="27sp"
-        android:textStyle="bold" />
+        android:layout_below="@id/textView2"
+        android:id="@+id/analyze_cardview"
+        app:cardCornerRadius="20dp"
+        android:layout_margin="15dp">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/analyze_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="5dp"
+                android:text="주간 섭취율을 통해 분석한 결과\n당신은                   타입입니다."
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/analyze_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:text="탄수화물 0g 단백질 0g 지방 0g"
+                android:layout_below="@id/analyze_type"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/analyzeImage"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:src="@drawable/foodgraph"
+                tools:src="@tools:sample/avatars"
+                android:layout_below="@id/analyze_total"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
     <ImageView
-        android:id="@+id/analyzeImage"
-        android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_below="@+id/textView4"
-        android:src="@drawable/foodgraph"
-        tools:src="@tools:sample/avatars" />
-
+        android:id="@+id/imageView5"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_below="@id/analyze_cardview"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="9dp"
+        android:src="@drawable/leaf" />
     <TextView
         android:id="@+id/recommend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/analyzeImage"
+        android:layout_below="@+id/analyze_cardview"
+        android:layout_toRightOf="@+id/imageView5"
 
         android:text="추천 식단"
-        android:layout_marginLeft="20dp"
-        android:textColor="@color/colorPrimary"
-        android:textSize="24sp"
+        android:layout_marginLeft="5dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginTop="5dp"/>
 

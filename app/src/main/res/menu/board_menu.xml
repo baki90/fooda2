@@ -1,7 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="자유게시판" />
-    <item android:title="식단공유방" />
-    <item android:title="운동공유방" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<item
+    android:id="@+id/friend_notification"
+    android:icon="@drawable/calendar"
+    app:showAsAction="always"
+    android:title="notification">
+
+
+</item>
+<item android:title="자유게시판" />
+<item android:title="식단공유방" />
+<item android:title="운동공유방" />
 </menu>

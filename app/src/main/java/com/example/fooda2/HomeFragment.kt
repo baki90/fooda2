@@ -78,6 +78,8 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
+       // view.home_toolbar.bringChildToFront(view)
+
         return view
     }
 
