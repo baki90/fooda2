@@ -66,24 +66,26 @@ class LoginActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, GOOGLE_LOGIN_CODE)
     }
     fun facebookLogin(){
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_prifile", "email"))
-        LoginManager.getInstance()
-            .registerCallback(callbackManager, object : FacebookCallback<LoginResult>{
-                override fun onSuccess(result: LoginResult?) {
-                    handleFacebookAccessToken(result?.accessToken)
-                }
+        startActivity(Intent(this, recipeActivity::class.java));
 
-                override fun onCancel() {
-                    TODO("Not yet implemented")
-                    Log.d("tag", "login cancel")
-                }
+        /*  LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_prifile", "email"))
+          LoginManager.getInstance()
+              .registerCallback(callbackManager, object : FacebookCallback<LoginResult>{
+                  override fun onSuccess(result: LoginResult?) {
+                      handleFacebookAccessToken(result?.accessToken)
+                  }
 
-                override fun onError(error: FacebookException?) {
-                    TODO("Not yet implemented")
-                    Log.d("tag", "login failed")
-                }
+                  override fun onCancel() {
+                      TODO("Not yet implemented")
+                      Log.d("tag", "login cancel")
+                  }
 
-            })
+                  override fun onError(error: FacebookException?) {
+                      TODO("Not yet implemented")
+                      Log.d("tag", "login failed")
+                  }
+
+              })*/
     }
     fun handleFacebookAccessToken(token : AccessToken?){
         var credential = FacebookAuthProvider.getCredential(token?.token!!)

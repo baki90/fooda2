@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/blue_bg_light"
+    tools:context=".recipeActivity">
+    <ImageView
+        android:id="@+id/recipe_leaf"
+        android:layout_below="@id/recipe_toolbar"
+        android:layout_width="21dp"
+        android:layout_height="21dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="14dp"
+        android:src="@drawable/leaf" />
+
+    <TextView
+        android:id="@+id/recipe_title"
+        android:layout_below="@id/recipe_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/recipe_leaf"
+        android:text="식단 레시피"
+        android:textColor="@color/colorAccent"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/recipe_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:src="@drawable/title_logo" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@+id/recipe_title"
+        android:layout_marginTop="15dp"
+        tools:srcCompat="@tools:sample/avatars"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/sandwich"/>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipe_card"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/colorLight"
+        android:scrollbarTrackVertical="@drawable/before_food"
+        app:cardCornerRadius="20dp">
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="1.햄은 얇게 썰어서 준비합니다. 샌드위치햄을 준비하셔도 좋습니다.\n2.식빵은 노릇하게 구워서 준비합니다. 버터로 굽지않고 올리브오일 살짝 뿌려서 구워줬어요.\n3.방울토마토 썰어주고. 큰토마토가 있음 더 좋습니다.\n4.양파도 썰어주고.\n5.계란후라이하나부쳐줍니다. 햄은 데쳐서 사용하는게 좋지만... 계란옆에서 살짝 구워줍니다.\n6.간단하게 샌드위치스프레드를 만들어요. 마요네즈1큰술에 머스타드 2/3큰술 다진피클1/2큰술을 넣고 섞어 줍니다.\n7.담백하게 구워낸 식빵 한쪽면에 샌드위치 스프레드 펴발라주고.\n8.구운햄 듬뿍 올려주고 재료를 아끼지 않는게 포인트죠~ 계란후라이 올려주고. 또 한장의 식빵에 스프레드 발라 덮어주고\n9.토마토와 양파올려주고 양상추 듬~뿍 올려줍니다. 양상추에 물기는 없도록! 그리고 역시나 재료아끼지않기 ㅋㅋ\n10.또한장의 식빵 한쪽면에 스프레드 발라서 뚜껑 덮어주세요.\n11.샌드위치 유산지에 꽁꽁 싸매주세요. 유산지가 없다면 랩!!"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textColorLink="@color/colorPrimary" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/recipe_card"
+        android:layout_below="@+id/imageView6"
+        android:backgroundTint="@color/blue_grey_bg_light"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="15dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="3dp"
+                android:text="클럽샌드위치"
+                android:textColor="@color/colorAccent"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="1인분 30분이내 아무나" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="340dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="[재료] 식빵 3장 햄  계란 1개 양파  토마토  양상추   \n마요네즈 1큰술 머스타드 1/2큰술 다진피클 1/2큰술" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

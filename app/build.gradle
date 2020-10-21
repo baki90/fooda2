@@ -47,4 +47,8 @@ dependencies {
 
 // Gson  레트로핏  컨버터  레트로 핏과 버전을 맞춘다
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    //navigation view
+    implementation 'com.gauravk.bubblenavigation:bubblenavigation:1.0.7'
+
 }

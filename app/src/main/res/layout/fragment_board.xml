@@ -33,7 +33,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:text="자유게시판"
+        android:text="식단 게시판"
         android:textAlignment="textStart"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="24sp"
@@ -45,10 +45,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="29dp"
-        android:layout_marginBottom="76dp"
-        android:clickable="true"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="80dp"
         android:backgroundTint="@color/white"
+        android:clickable="true"
         android:src="@drawable/leaf" />
 
 

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.android.synthetic.main.fragment_board.*
 
 class MenuActivity : AppCompatActivity() {
-    private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    /*private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
                 val fragment_home = HomeFragment()
@@ -37,12 +37,36 @@ class MenuActivity : AppCompatActivity() {
             }
         }
         false
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+        navigation.setNavigationChangeListener { view, position ->
+            when(position){
+                0-> {
+                    val fragment_home = HomeFragment()
+                    openFragment(fragment_home)
+                }
+                1-> {
+                    val fragment_analyze = AnalyzeFragment()
+                    openFragment(fragment_analyze)
+                }
+                2-> {
+                    val fragment_recommend = RecommendFragment()
+                    openFragment(fragment_recommend)
+                }
+                3-> {
+                    val fragment_board = BoardFragment()
+                    openFragment(fragment_board)
+                }
+                4->{
+                    val fragment_mypage = MypageFragment()
+                    openFragment(fragment_mypage)
+                }
+            }
+        }
+        //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         openFragment(HomeFragment()) //초기 세팅은 home으로 함.
         //actionBar.setTitle("Fooda!")
         //hideActionBar()

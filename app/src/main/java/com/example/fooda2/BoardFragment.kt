@@ -43,9 +43,26 @@ class BoardFragment : Fragment() {
         // Inflate the layout for this fragment
         val view :View = inflater.inflate(R.layout.fragment_board, container, false)
         val list: ArrayList<CustomItem> = ArrayList()
-        list.add(CustomItem("건강관리 비법","다들 건강하게 살면 좋겠어서 공유합니다. ^^ \n오늘도 행복한 하루!", "멋쟁이연희", "#식이요법 #건강관리"))
-        list.add(CustomItem("다들 맛난 밥 먹으시나용","오늘도 맛있는 저녁을 하려고 했는데 제대로 되진 않네요 ㅠㅠ\n 특별한 방법 있으면 공유 바라요~!", "현지맘", "#식단관리"))
-        list.add(CustomItem("3대 500 어렵네요","근손실이 오지 않게 오늘도 노력하겠습니다.", "주영간지", "#헬스 #다이어트"))
+        list.add(CustomItem("하루에 물 2리터 먹기","음식물을 통해 하루 0.5ℓ 정도의 수분이 섭취된다고 하니, 결국 물을 적어도 2ℓ를 마셔야 한다는 결론이 나옵니다. \n세계보건기구(WHO)가 권장하는 하루 물 섭취량은 1.5~2ℓ입니다. \n200mℓ가 들어가는 일반적인 컵으로 약 8~10잔 정도입니다",
+            "멋쟁이연희", "#하루에물2리터 #건강관리"))
+        list.add(CustomItem("빈혈에 좋은 음식","자가진단을 통해 빈혈이 의심된다면, 지금부터 소개하는 빈혈에 좋은 음식을 꾸준히 섭취해보세요\n" +
+                "소고기 빈혈에 좋은 대표적인 음식은 붉은 살코기다.\n" +
+                "달걀노른자 빈혈 예방 특히, 철 결핍성 빈혈에는 달걀노른자가 좋다.\n" +
+                "미역\n" +
+                "시금치\n" +
+                "브로콜리\n" +
+                "레드비트\n" +
+                "피조개\n" +
+                "굴", "현지맘", "#빈혈에 좋은 음식"))
+        list.add(CustomItem("감기에 좋은 음식","파 넣은 콩나물국 콩나물은 몸의 열을 내려주고 간 기능을 회복시켜 감기를 다스리는 데 효과적이다", "주영간지", "#헬스 #다이어트"))
+        list.add(CustomItem("당뇨에 좋은 음식","오트밀\n" +
+                "통곡물 빵\n" +
+                "당근, 녹두 같은 전분을 포함하지 않는 채소\n" +
+                "콩류\n" +
+                "고구마\n" +
+                "통곡물 파스타\n" +
+                "껍질을 벗긴 닭고기\n" +
+                "냉수성 어류", "주영간지", "#당뇨"))
 
         view.board_list.adapter = context?.let { CustomAdapter(it, list) }
 

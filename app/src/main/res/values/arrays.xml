@@ -11,4 +11,9 @@
         <item>레시피</item>
         <item>헬스장</item>
     </string-array>
+    <string-array name="인분">
+        <item>1인분</item>
+        <item>2인분</item>
+        <item>3인분</item>
+    </string-array>
 </resources>

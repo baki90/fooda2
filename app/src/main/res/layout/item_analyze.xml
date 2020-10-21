@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/analyze_cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -15,11 +16,11 @@
             android:id="@+id/analyze_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="15dp"
             android:text="클럽 샌드위치 456kcal"
             android:textAlignment="center"
             android:textColor="@android:color/darker_gray"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
     </androidx.cardview.widget.CardView>

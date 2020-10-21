@@ -44,10 +44,21 @@
         android:layout_toRightOf="@id/imageView4"
         android:layout_below="@id/analyze_toolbar"/>
 
+    <TextView
+        android:id="@+id/analyze_explain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView2"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="3dp"
+        android:text="2020-10-13일 ~ 2020-10-20일 간의 섭취량 기준 분석입니다."
+
+        android:textColor="@color/grey_active"
+        android:textSize="16sp" />
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textView2"
+        android:layout_below="@id/analyze_explain"
         android:id="@+id/analyze_cardview"
         app:cardCornerRadius="20dp"
         android:layout_margin="15dp">
@@ -82,42 +93,27 @@
             <ImageView
                 android:id="@+id/analyzeImage"
                 android:layout_width="match_parent"
-                android:layout_height="240dp"
+                android:layout_height="220dp"
                 android:src="@drawable/foodgraph"
                 tools:src="@tools:sample/avatars"
                 android:layout_below="@id/analyze_total"/>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="21dp"
-        android:layout_height="21dp"
-        android:layout_below="@id/analyze_cardview"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="9dp"
-        android:src="@drawable/leaf" />
+
     <TextView
         android:id="@+id/recommend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/analyze_cardview"
-        android:layout_toRightOf="@+id/imageView5"
 
-        android:text="추천 식단"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="20dp"
+        android:text="정상적인 식이습관을 유지하기 위해
+        \n탄수화물 50% 단백질 30% 지방 20%를 충족해야 합니다."
         android:textColor="@color/colorAccent"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginTop="5dp"/>
-
-    <ListView
-        android:id="@+id/recommendlist"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/recommend"
-        android:layout_margin="15dp"
-        android:layout_marginTop="11dp"
-        android:divider="#ffffff"/>
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <!-- TODO: Update blank fragment layout -->
 

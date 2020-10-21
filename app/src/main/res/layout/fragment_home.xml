@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="29dp"
-        android:layout_marginBottom="76dp"
-        android:clickable="true"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="80dp"
         android:backgroundTint="#FFFFFF"
+        android:clickable="true"
         android:src="@drawable/leaf" />
 
     <androidx.cardview.widget.CardView
@@ -120,6 +120,7 @@
         android:textColor="@color/colorPrimary"
         android:textSize="18sp"
         android:textStyle="bold" />
+
     <ListView
         android:id="@+id/home_list"
         android:layout_width="match_parent"
@@ -127,7 +128,9 @@
         android:layout_below="@+id/home_today"
         android:layout_margin="10dp"
         android:dividerHeight="0px"
-        android:divider="#ffffff"/>
+        android:divider="#ffffff">
+
+    </ListView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

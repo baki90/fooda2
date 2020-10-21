@@ -84,6 +84,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun home_init(datetime: String, view : View) {
+
         var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
         var server = retrofit.create(RetrofitInterface::class.java)
 
@@ -125,7 +126,6 @@ class HomeFragment : Fragment() {
                 }
             }
         })
-
     }
 
     companion object {
