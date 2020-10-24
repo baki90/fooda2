@@ -1,15 +1,26 @@
 package com.example.fooda2
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_analyze.view.*
 import kotlinx.android.synthetic.main.fragment_recommend.view.*
+import kotlinx.android.synthetic.main.fragment_recommend.view.analyze_cal
+import kotlinx.android.synthetic.main.fragment_recommend.view.ddd
+import kotlinx.android.synthetic.main.fragment_recommend.view.jjj
+import kotlinx.android.synthetic.main.fragment_recommend.view.ttt
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -45,8 +56,63 @@ class RecommendFragment : Fragment() {
         list.add("닭가슴살 164kcal/100g")
         list.add("그린 샐러드 148kcal/150g")
         list.add("소고기 240kcal/100g")
-        view.recommend_list.adapter = context?.let { AnalyzeAdapter(it, list) }
+        val mHandler = Handler()
+        mHandler.postDelayed(Runnable {
+            view.recommend_list.adapter = context?.let { AnalyzeAdapter(it, list) }
+        }, 300) // 0.5초후
+
+
+        view.recommend_list.onItemClickListener = object : AdapterView.OnItemClickListener{
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val foodname : String = list[position]
+                val intent = Intent(context, recipeActivity::class.java)
+                intent.putExtra("foodname", foodname)
+                startActivity(intent)
+            }
+
+        }
+        recommendInit(view)
         return view
+    }
+
+    private fun recommendInit(view: View) {
+        var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
+        var server = retrofit.create(RetrofitInterface::class.java)
+
+        server.get_analyze_person(RetrofitInterface.RetrofitClient.token).enqueue(object :
+            Callback<RetrofitInterface.Analyze> {
+            override fun onFailure(call: Call<RetrofitInterface.Analyze>, t: Throwable) {
+                Log.d("레트로핏 결과1", t.message)
+            }
+
+            override fun onResponse(
+                call: Call<RetrofitInterface.Analyze>,
+                response: Response<RetrofitInterface.Analyze>
+            ) {
+                if (response?.isSuccessful) {
+                    val tan = response?.body()?.carbohydrate
+                    val dan = response?.body()?.protein
+                    val gi = response?.body()?.fat
+                    view.analyze_cal.setText(
+                        "[총 섭취량] 탄수화물 " + response?.body()?.tan?.toInt()
+                            .toString() + "g  단백질 " + response?.body()?.dan?.toInt()
+                            .toString() + "g  지방 " + response?.body()?.ji?.toInt().toString() + "g"
+                    )
+                    view.ttt.setText("탄수화물\n" + tan?.toInt().toString() + "%")
+                    view.ddd.setText("단백질\n" + dan?.toInt().toString() + "%")
+                    view.jjj.setText("지방\n" + gi?.toInt().toString() + "%")
+
+                    //view.analyze_total.setText("탄수화물 " + tan?.toInt().toString() + "g " +  "단백질 " + dan?.toInt().toString() + "g " + "지방 "+ gi?.toInt().toString() + "g")
+                    Log.d("레트로핏 결과2", "" + response?.body().toString())
+                } else {
+                }
+            }
+        })
     }
 
     companion object {

@@ -31,6 +31,12 @@ interface RetrofitInterface {
     @GET("/analyzeImage")
     fun get_analyze_image(@Query("email") email : String) : Call<ResponseBody>
 
+    @GET("/analyzeTotalDiet")
+    fun get_analyze_total(@Query("email") email : String) : Call<Total>
+
+    @GET("/recipe")
+    fun get_recipe(@Query("foodname") foodname : String) : Call<Recipe>
+
     @FormUrlEncoded
     @POST("/register")
     fun post_register(@Field("email") email : String, @Field("password") password: String, @Field("name") name: String,
@@ -80,6 +86,9 @@ interface RetrofitInterface {
         val carbohydrate: Float,
         val protein: Float,
         val fat: Float,
+        val tan: Float,
+        val dan: Float,
+        val ji: Float,
         val style: String
     )
 
@@ -88,5 +97,20 @@ interface RetrofitInterface {
         val day : Int,
         val food_name: String,
         val gram: Float
+    )
+
+    data class Recipe(
+        val result: String,
+        val title: String,
+        val level: String,
+        val source: List<String>,
+        val step: List<String>
+    )
+    data class Total(
+        val style: String,
+        val mon: Int,
+        val lun: Int,
+        val din: Int,
+        val sna: Int
     )
 }

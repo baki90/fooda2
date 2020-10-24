@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //splash time 3초로 지정
-        val SPLASH_TIME_OUT: Long = 2000
+        val SPLASH_TIME_OUT: Long = 1000
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

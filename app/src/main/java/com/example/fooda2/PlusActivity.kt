@@ -1,19 +1,26 @@
 package com.example.fooda2
 
 import android.Manifest
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -27,15 +34,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class PlusActivity : AppCompatActivity() {
-    var PICK_IMAGE_FROM_ALBUM = 0
+    val REQUEST_IMAGE_CAPTURE = 1
+
     var storage : FirebaseStorage? = null
     var photoUri : Uri? = null
     var food_id : Int?= 0
     var day : Int = 0
+    lateinit var currentPhotoPath : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_plus)
@@ -61,15 +71,8 @@ class PlusActivity : AppCompatActivity() {
         }
         //갤러리 업로드
         plus_upload_btn.setOnClickListener {
-            var photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            if(ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-                startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
-            }
-            else {
-                Toast.makeText(this, "권한 설정을 완료해 주세요.",Toast.LENGTH_LONG).show()
-            }
+            if(checkPersmission()) pickImage()
+            else requestPermission()
         }
 
         plus_analyze_btn.setOnClickListener {
@@ -80,8 +83,86 @@ class PlusActivity : AppCompatActivity() {
             dietUplaod()
         }
     }
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(READ_EXTERNAL_STORAGE, CAMERA),
+            REQUEST_IMAGE_CAPTURE)
+    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    // 카메라 권한 체크
+    private fun checkPersmission(): Boolean {
+        return (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    // 권한요청 결과
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("TAG", "Permission: " + permissions[0] + "was " + grantResults[0] + "카메라 허가 받음 예이^^")
+        }else{
+            Log.d("TAG","카메라 허가 못받음 ㅠ 젠장!!")
+        }
+    }
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+    private fun pickImage() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            if (takePictureIntent.resolveActivity(this.packageManager) != null) {
+                // 찍은 사진을 그림파일로 만들기
+                val photoFile: File? =
+                    try {
+                        createImageFile()
+                    } catch (ex: IOException) {
+                        Log.d("TAG", "그림파일 만드는도중 에러생김")
+                        null
+                    }
+
+                if (Build.VERSION.SDK_INT < 24) {
+                    if(photoFile != null){
+                        val photoURI = Uri.fromFile(photoFile)
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                        Log.d("tq", "takepicture put extra")
+                    }
+                }
+                else{
+                    // 그림파일을 성공적으로 만들었다면 startActivityForResult로 보내기
+                    photoFile?.also {
+                        val photoURI: Uri = FileProvider.getUriForFile(
+                            this, "com.example.fooda2.fileprovider", it
+                        )
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    }
+                }
+
+
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                //intent.action = Intent.ACTION_GET_CONTENT
+
+                val chooserIntent = Intent.createChooser(intent, "식단 사진을 업로드하세요.")
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(takePictureIntent))
+                startActivityForResult(chooserIntent, REQUEST_IMAGE_CAPTURE)
+            }
+        }
+    }
+
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == PICK_IMAGE_FROM_ALBUM){
             if(resultCode == Activity.RESULT_OK){
@@ -93,8 +174,45 @@ class PlusActivity : AppCompatActivity() {
                 finish()
             }
         }
-    }
+    }*/
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
+        when (requestCode){
+            1 -> {
+                if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
+
+                    data?.data?.let { uri ->
+                        photoUri = uri
+                        plus_food.setImageURI(photoUri)
+                        Log.d("사진", photoUri.toString())
+                    }
+
+                    val file = File(currentPhotoPath)
+                    val selectedUri = Uri.fromFile(file)
+                    try{
+                        selectedUri?.let {
+                            if (Build.VERSION.SDK_INT < 28) {
+                                val bitmap = MediaStore.Images.Media
+                                    .getBitmap(contentResolver, selectedUri)
+                                plus_food.setImageBitmap(bitmap)
+                            }
+                            else{
+                                val decode = ImageDecoder.createSource(this.contentResolver,
+                                    selectedUri)
+                                val bitmap = ImageDecoder.decodeBitmap(decode)
+                                plus_food.setImageBitmap(bitmap)
+                            }
+                        }
+
+                    }catch (e: java.lang.Exception){
+                        e.printStackTrace()
+                    }
+
+                }
+            }
+        }
+    }
     fun dietUplaod(){
 
         var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
@@ -126,7 +244,14 @@ class PlusActivity : AppCompatActivity() {
 
     fun dietAnalyze(){
         //make filename
-        var file = File(getRealPathFromURI(photoUri))
+        var file : File
+        if(photoUri==null) {file = File(currentPhotoPath)}
+        else {
+            file= File(getRealPathFromURI(photoUri))
+            photoUri = null
+        }
+        Log.d("사진이름", file.toString())
+
         var timestamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         var imageFileName = "IMAGE_" + timestamp + "_.png" //중복 방지
 
@@ -172,6 +297,7 @@ class PlusActivity : AppCompatActivity() {
         val proj = arrayOf<String>(MediaStore.Images.Media.DATA)
         val cursor: Cursor? = contentResolver.query(contentUri!!, proj, null, null, null)
         cursor!!.moveToNext()
+        //Log.d("cursor", cursor.toString())
         val path: String =
             cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA))
         val uri = Uri.fromFile(File(path))

@@ -1,6 +1,8 @@
 package com.example.fooda2
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.diet_alert.*
 import kotlinx.android.synthetic.main.fragment_analyze.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -48,6 +53,9 @@ class AnalyzeFragment : Fragment() {
 
         val view :View = inflater.inflate(R.layout.fragment_analyze, container, false)
         analyzeInit(view)
+        view.sna.setOnClickListener {
+            showPopUp()
+        }
         return view
     }
 
@@ -55,19 +63,26 @@ class AnalyzeFragment : Fragment() {
         var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
         var server = retrofit.create(RetrofitInterface::class.java)
 
-        server.get_analyze_person(RetrofitInterface.RetrofitClient.token).enqueue(object:
-            Callback<RetrofitInterface.Analyze> {
-            override fun onFailure(call: Call<RetrofitInterface.Analyze>, t: Throwable) {
+        server.get_analyze_total(RetrofitInterface.RetrofitClient.token).enqueue(object:
+            Callback<RetrofitInterface.Total> {
+            override fun onFailure(call: Call<RetrofitInterface.Total>, t: Throwable) {
                 Log.d("레트로핏 결과1",t.message)
             }
-            override fun onResponse(call: Call<RetrofitInterface.Analyze>, response: Response<RetrofitInterface.Analyze>) {
+            override fun onResponse(call: Call<RetrofitInterface.Total>, response: Response<RetrofitInterface.Total>) {
                 if (response?.isSuccessful) {
-                    val style : String? = response?.body()?.style
-                    val tan = response?.body()?.carbohydrate
-                    val dan = response?.body()?.protein
-                    val gi =response?.body()?.fat
-                    view.analyze_type.setText("주간 섭취율을 통해 분석한 결과\n" + style + "타입입니다.")
-                    view.analyze_total.setText("탄수화물 " + tan?.toInt().toString() + "g " +  "단백질 " + dan?.toInt().toString() + "g " + "지방 "+ gi?.toInt().toString() + "g")
+                    val mon = response.body()?.mon
+                    val lun = response.body()?.lun
+                    val din = response.body()?.din
+                    val sna = response.body()?.sna
+                    val style = response.body()?.style
+                    view.analyze_type2.setText(style)
+                    val total = mon!! + lun!! + din!!
+                    view.total_eat.setText("총 식사 횟수: " + total.toString() +"회")
+                    view.mon.setText("아침\n" + mon.toString() + "회")
+                    view.lun.setText("점심\n" +lun.toString()+ "회")
+                    view.din.setText("저녁\n" +din.toString()+ "회")
+                    view.sna.setText("간식\n" +sna.toString()+ "회")
+                    //view.analyze_total.setText("탄수화물 " + tan?.toInt().toString() + "g " +  "단백질 " + dan?.toInt().toString() + "g " + "지방 "+ gi?.toInt().toString() + "g")
                     Log.d("레트로핏 결과2",""+response?.body().toString())
                 } else {
                 }
@@ -92,6 +107,14 @@ class AnalyzeFragment : Fragment() {
         })
     }
 
+    private fun showPopUp(){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("섭취 일자")
+        builder.setMessage("2020-10-23 햄버거 426kcal")
+        builder.setPositiveButton("확인", null)
+
+        builder.show()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

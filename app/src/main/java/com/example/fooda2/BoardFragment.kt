@@ -3,6 +3,7 @@ package com.example.fooda2
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_board.*
 import kotlinx.android.synthetic.main.fragment_board.view.*
+import kotlinx.android.synthetic.main.fragment_recommend.view.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -64,7 +66,11 @@ class BoardFragment : Fragment() {
                 "껍질을 벗긴 닭고기\n" +
                 "냉수성 어류", "주영간지", "#당뇨"))
 
-        view.board_list.adapter = context?.let { CustomAdapter(it, list) }
+
+        val mHandler = Handler()
+        mHandler.postDelayed(Runnable {
+            view.board_list.adapter = context?.let { CustomAdapter(it, list) }
+        }, 400) // 0.5초후
 
         view.floatingActionButton2.setOnClickListener {
                 val intent = Intent(context, BoarduploadActivity::class.java)

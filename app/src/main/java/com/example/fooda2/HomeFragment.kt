@@ -1,10 +1,13 @@
 package com.example.fooda2
 
+import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.TextView
 import android.widget.Toast
@@ -13,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_board.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.fragment_recommend.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +38,8 @@ class HomeFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    val date : Date = Date(System.currentTimeMillis())
+    var datetime : String = SimpleDateFormat("yyyy-MM-dd").format(date)
     val list: ArrayList<CustomItem2> = ArrayList()
     val fooday : List<String> = listOf<String>("아침", "점심", "저녁","간식")
     
@@ -52,10 +58,7 @@ class HomeFragment : Fragment() {
         // Inflate the layout for th`is fragment
         val view: View = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val now = System.currentTimeMillis();
-        val date : Date = Date(now)
-        val datetime : String = SimpleDateFormat("yyyy-MM-dd").format(date)
-        Log.d("time", datetime)
+
         home_init(datetime, view)
         val mFormat : SimpleDateFormat = SimpleDateFormat("yyyy년 MM월 dd일")
         val time : String = mFormat.format(date)
@@ -67,10 +70,7 @@ class HomeFragment : Fragment() {
 
 
         view.home_list.adapter = context?.let { CustomAdapter2(it, list) }
-        view.cal_btn.setOnClickListener { view ->
-            val intent = Intent(context, MonthActivity::class.java)
-            startActivity(intent)
-        }
+
 
         view.home_fab.setOnClickListener{
             view ->
@@ -78,7 +78,46 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
+        view.home_list.onItemClickListener = object : AdapterView.OnItemClickListener{
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                showDietPopUp()
+            }
+
+        }
+
        // view.home_toolbar.bringChildToFront(view)
+
+        var cal = Calendar.getInstance()
+
+        val dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, monthOfYear)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            val myFormat = "yyyy년 MM월 dd일" // mention the format you need
+            val sdf = SimpleDateFormat(myFormat, Locale.US)
+            datetime = SimpleDateFormat("yyyy-MM-dd").format(cal.time)
+            val time = sdf.format(cal.time).toString()
+            home_date_txt.text = time
+            home_re(datetime, view)
+        }
+        view.cal_btn.setOnClickListener { view ->
+            //val intent = Intent(context, MonthActivity::class.java)
+            //startActivity(intent)
+            DatePickerDialog(context!!, dateSetListener,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)).show()
+
+
+            //home_init(datetime,view)
+
+        }
 
         return view
     }
@@ -119,6 +158,7 @@ class HomeFragment : Fragment() {
             override fun onResponse(call: Call<List<RetrofitInterface.foodlist>>, response: Response<List<RetrofitInterface.foodlist>>) {
                 if (response?.isSuccessful) {
                     val i = 0
+                    list.clear()
                     for(res in response.body()!!){
                         list.add(CustomItem2(fooday[res.day], res.food_name, res.cal.toInt().toString() + "kcal / "  +res.gram.toInt().toString() +"g"))
                     }
@@ -128,6 +168,61 @@ class HomeFragment : Fragment() {
         })
     }
 
+    private fun home_re(datetime: String, view : View) {
+
+        var retrofit = RetrofitInterface.RetrofitClient.getInstnace()
+        var server = retrofit.create(RetrofitInterface::class.java)
+
+        server.get_total_diet(RetrofitInterface.RetrofitClient.token,datetime).enqueue(object:
+            Callback<RetrofitInterface.Nutrient> {
+            override fun onFailure(call: Call<RetrofitInterface.Nutrient>, t: Throwable) {
+                Log.d("레트로핏 결과1",t.message)
+            }
+            override fun onResponse(call: Call<RetrofitInterface.Nutrient>, response: Response<RetrofitInterface.Nutrient>) {
+                if (response?.isSuccessful) {
+                    val kcal = response?.body()?.calories?.toInt()
+                    val tan = response?.body()?.carbohydrate
+                    val dan = response?.body()?.protein
+                    val gi =response?.body()?.fat
+                    val kicho = response?.body()?.kicho?.toInt()
+
+                    home_total.setText(kcal.toString() + " / " + kicho + "\n잔여 칼로리 " + (kicho!!-kcal!!) + "kcal")
+                    home_cal.setText("탄수화물\n"+tan.toString()+'g')
+                    home_pro.setText("단백질\n"+dan.toString()+'g')
+                    home_fat.setText("지방\n"+gi.toString()+'g')
+
+                    Log.d("레트로핏 결과2",""+response?.body().toString())
+                } else {
+                }
+            }
+        })
+
+        server.get_total_diet_list(RetrofitInterface.RetrofitClient.token, datetime).enqueue(object: Callback<List<RetrofitInterface.foodlist>>{
+            override fun onFailure(call: Call<List<RetrofitInterface.foodlist>>, t: Throwable) {
+                Log.d("레트로핏 결과1",t.message)
+            }
+            override fun onResponse(call: Call<List<RetrofitInterface.foodlist>>, response: Response<List<RetrofitInterface.foodlist>>) {
+                if (response?.isSuccessful) {
+                    val i = 0
+                    list.clear()
+                    for(res in response.body()!!){
+                        list.add(CustomItem2(fooday[res.day], res.food_name, res.cal.toInt().toString() + "kcal / "  +res.gram.toInt().toString() +"g"))
+                    }
+                } else {
+                }
+            }
+        })
+    }
+
+    private fun showDietPopUp(){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("점심")
+        builder.setMessage("2020-10-23\n라멘 499kcal/400g\n탄수화물 83g 단백질 14g 지방 10g")
+        builder.setPositiveButton("확인", null)
+        builder.setNegativeButton("삭제", null)
+
+        builder.show()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of
